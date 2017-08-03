@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define ROWS 6
 void drawBox(FILE *fp, unsigned char isWhite) {
   static unsigned char color[3];
   for (int y=0; y < 60; ++y) {
@@ -21,42 +22,32 @@ void drawBox(FILE *fp, unsigned char isWhite) {
   }
 }
 
-void makeImage(int first, int second, int third) {
-  char name[6];
-  sprintf(name, "%d%d%d.ppm", first, second, third);
+void makeImageName(char *buff, int name) {
+  for (int i=ROWS - 1; i >= 0; --i) {
+    sprintf(buff + (ROWS - i - 1), "%d", name >> i & 1);
+  }
+  sprintf(buff + ROWS, ".ppm");
+}
+
+void makeImage(int vals) {
+  char *name = calloc(ROWS + 5, 1);
+  makeImageName(name, vals);
+  printf("%s\n", name);
   FILE *fp = fopen(name, "wb");
-  const int dimx = 60, dimy = 180;
+  int width = 60;
+  const int dimx = width, dimy = width*ROWS;
   (void) fprintf(fp, "P6\n%d %d\n255\n", dimx, dimy);
-  drawBox(fp, first);
-  drawBox(fp, second);
-  drawBox(fp, third);
+  for (int i=ROWS - 1; i >= 0; --i) {
+    drawBox(fp, vals >> i & 1);
+  }
   (void) fclose(fp);
 }
 
 int main(void)
 {
-  makeImage(0,0,0);
-  makeImage(0,0,1);
-  makeImage(0,1,0);
-  makeImage(0,1,1);
-  makeImage(1,0,0);
-  makeImage(1,0,1);
-  makeImage(1,1,0);
-  makeImage(1,1,1);
-
-  // int i, j;
-  // FILE *fp = fopen("first.ppm", "wb"); /* b - binary mode */
-
-  // for (j = 0; j < dimy; ++j)
-  // {
-  //   for (i = 0; i < dimx; ++i)
-  //   {
-  //     static unsigned char color[3];
-  //     color[0] = i % 256;  /* red */
-  //     color[1] = j % 256;  /* green */
-  //     color[2] = (i * j) % 256;  /* blue */
-  //     (void) fwrite(color, 1, 3, fp);
-  //   }
-  // }
+  int max = 1 << ROWS;
+  for (int i = 0; i < max; ++i) {
+    makeImage(i);
+  }
   return EXIT_SUCCESS;
 }
