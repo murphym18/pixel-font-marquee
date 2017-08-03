@@ -2,10 +2,11 @@
 #include <stdio.h>
 
 #define ROWS 6
+#define BLOCK 5
 void drawBox(FILE *fp, unsigned char isWhite) {
   static unsigned char color[3];
-  for (int y=0; y < 60; ++y) {
-    for (int x=0; x < 60; ++x) {
+  for (int y=0; y < BLOCK; ++y) {
+    for (int x=0; x < BLOCK; ++x) {
       if (isWhite) {
          color[1] = 255;
          color[0] = 255;
@@ -34,7 +35,7 @@ void makeImage(int vals) {
   makeImageName(name, vals);
   printf("%s\n", name);
   FILE *fp = fopen(name, "wb");
-  int width = 60;
+  int width = BLOCK;
   const int dimx = width, dimy = width*ROWS;
   (void) fprintf(fp, "P6\n%d %d\n255\n", dimx, dimy);
   for (int i=ROWS - 1; i >= 0; --i) {
